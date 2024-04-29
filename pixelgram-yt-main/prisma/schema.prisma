@@ -69,7 +69,8 @@ model User {
     following     Follows[]   @relation("follower")
     accounts      Account[]
     sessions      Session[]
-
+    location      String?  // Add this line for the location field
+   
     @@map(name: "users")
 }
 

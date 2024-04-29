@@ -26,11 +26,13 @@ import { UploadButton } from '@/lib/uploadthing';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
 function CreatePage() {
+  const [fileSelected, setFileSelected] = useState(false);
   const pathname = usePathname();
   const isCreatePage = pathname === '/dashboard/create';
   const router = useRouter();
@@ -52,91 +54,91 @@ function CreatePage() {
         open={isCreatePage}
         onOpenChange={(open) => !open && router.back()}
       >
-        <div>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle className='text-center border-b p-4 w-full text-2xl'>
-                Create new post
-              </DialogTitle>
-            </DialogHeader>
+        <DialogContent className='dark:bg-[#262626] shadow-xl'>
+          <DialogHeader>
+            <DialogTitle className='text-center border-b dark:border-b-[#363636] p-4 w-full text-lg font-medium tracking-wide'>
+              Create new post
+            </DialogTitle>
+          </DialogHeader>
 
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(async (values) => {
-                  const res = await createPost(values);
-                  if (res) {
-                    return toast.error(<Error res={res} />);
-                  }
-                })}
-                className='space-y-4'
-              >
-                {!!fileUrl ? (
-                  <div className='h-96 md:h-[450px] overflow-hidden rounded-md'>
-                    <AspectRatio ratio={1 / 1} className='relative h-full'>
-                      <Image
-                        src={fileUrl}
-                        alt='Post preview'
-                        fill
-                        className='rounded-md object-cover'
-                      />
-                    </AspectRatio>
-                  </div>
-                ) : (
-                  <FormField
-                    control={form.control}
-                    name='fileUrl'
-                    render={({ field, fieldState }) => (
-                      <FormItem>
-                        <FormDescription className='text-2xl text-center pb-3'>
-                          Drag photos and videos here.
-                        </FormDescription>
-                        <FormMessage />
-                        <FormControl>
-                          <UploadButton
-                            endpoint='imageUploader'
-                            onClientUploadComplete={(res) => {
-                              form.setValue('fileUrl', res[0].url);
-                              toast.success('Upload complete');
-                            }}
-                            onUploadError={(error: Error) => {
-                              console.error(error);
-                              toast.error('Upload failed');
-                            }}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                )}
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(async (values) => {
+                const res = await createPost(values);
+                if (res) {
+                  return toast.error(<Error res={res} />);
+                }
+              })}
+              className='space-y-4'
+            >
+              {!!fileUrl ? (
+                <div className='h-96 md:h-[450px] overflow-hidden rounded-md'>
+                  <AspectRatio ratio={1 / 1} className='relative h-full'>
+                    <Image
+                      src={fileUrl}
+                      alt='Post preview'
+                      fill
+                      className='rounded-md object-cover'
+                    />
+                  </AspectRatio>
+                </div>
+              ) : (
+                <FormField
+                  control={form.control}
+                  name='fileUrl'
+                  render={({ field, fieldState }) => (
+                    <FormItem>
+                      <FormDescription className='text-2xl text-center pb-3'>
+                        Drag photos and videos here.
+                      </FormDescription>
+                      <FormMessage />
+                      <FormControl>
+                        <UploadButton
+                          endpoint='imageUploader'
+                          onClientUploadComplete={(res) => {
+                            form.setValue('fileUrl', res[0].url);
+                            toast.success('Upload complete');
+                            setFileSelected(true); // Set fileSelected to true
+                          }}
+                          onUploadError={(error: Error) => {
+                            console.error(error);
+                            toast.error('Upload failed');
+                          }}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              )}
 
-                {!!fileUrl && (
-                  <FormField
-                    control={form.control}
-                    name='caption'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel htmlFor='caption'>Caption</FormLabel>
-                        <FormControl>
-                          <Input
-                            type='caption'
-                            id='caption'
-                            placeholder='Write a caption...'
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                )}
-
-                <Button type='submit' disabled={form.formState.isSubmitting}>
+              {!!fileUrl && (
+                <FormField
+                  control={form.control}
+                  name='caption'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel htmlFor='caption'>Caption</FormLabel>
+                      <FormControl>
+                        <Input
+                          type='caption'
+                          id='caption'
+                          placeholder='Write a caption...'
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+              {!!fileUrl && fileSelected && (
+               <Button type='submit' disabled={form.formState.isSubmitting}>
                   Create Post
                 </Button>
-              </form>
-            </Form>
-          </DialogContent>
-        </div>
+              )}
+            </form>
+          </Form>
+        </DialogContent>
       </Dialog>
     </div>
   );

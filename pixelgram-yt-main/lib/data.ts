@@ -30,6 +30,7 @@ export async function fetchPosts() {
     });
 
     return data;
+
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch posts");
@@ -201,5 +202,25 @@ export async function fetchSavedPostsByUsername(username: string) {
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch saved posts");
+  }
+}
+
+export async function fetchUserAccounts(pageNumber: number, pageSize: number) {
+  try {
+    const offset = (pageNumber - 1) * pageSize;
+    const data = await prisma.user.findMany({
+      skip: offset,
+      take: pageSize,
+      select: {
+        id: true,
+        username: true,
+        image: true,
+      },
+    });
+
+    return data;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch user accounts');
   }
 }

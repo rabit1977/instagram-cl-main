@@ -15,7 +15,7 @@ type Props = {
 
 function PostActions({ post, userId, className }: Props) {
   return (
-    <div className={cn("relative flex items-start w-full gap-x-2", className)}>
+    <div className={cn("relative flex items-start w-full gap-x-2 pb-5", className)}>
       <LikeButton post={post} userId={userId} />
       <Link href={`/dashboard/p/${post.id}`}>
         <ActionIcon>

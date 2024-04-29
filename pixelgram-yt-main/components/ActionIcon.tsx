@@ -8,7 +8,7 @@ function ActionIcon({ children, ...buttonProps }: Props) {
   return (
     <Button
       type="submit"
-      variant={"ghost"}
+      variant={"link"}
       size={"icon"}
       className="h-9 w-9"
       {...buttonProps}

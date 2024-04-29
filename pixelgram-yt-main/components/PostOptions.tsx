@@ -23,7 +23,7 @@ function PostOptions({ post, userId, className }: Props) {
       <DialogTrigger asChild>
         <MoreHorizontal
           className={cn(
-            "h-5 w-5 cursor-pointer dark:text-neutral-400",
+            "size-5 cursor-pointer dark:text-neutral-400",
             className
           )}
         />
@@ -38,7 +38,7 @@ function PostOptions({ post, userId, className }: Props) {
             className="postOption"
           >
             <input type="hidden" name="id" value={post.id} />
-            <SubmitButton className="text-red-500 font-bold disabled:cursor-not-allowed w-full p-3">
+            <SubmitButton className="text-red-500  font-bold disabled:cursor-not-allowed w-full p-1">
               Delete post
             </SubmitButton>
           </form>
@@ -48,14 +48,14 @@ function PostOptions({ post, userId, className }: Props) {
           <Link
             scroll={false}
             href={`/dashboard/p/${post.id}/edit`}
-            className="postOption p-3"
+            className="postOption  p-1"
           >
             Edit
           </Link>
         )}
 
         <form action="" className="postOption border-0">
-          <button className="w-full p-3">Hide like count</button>
+          <button className="w-full p-1 ">Hide like count</button>
         </form>
       </DialogContent>
     </Dialog>

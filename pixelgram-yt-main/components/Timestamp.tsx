@@ -1,11 +1,16 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import ReactTimeago from "react-timeago";
+import { cn } from "@/lib/utils";
 
 type Props = {
   createdAt: Date;
   className?: string;
+};
+
+const formatTimeUnit = (value: number, unit: string): string => {
+  // Example: if it's 7 min, return "7m"; if it's 7 hours, return "7h" like that
+  return `${value}${unit[0]}`;
 };
 
 function Timestamp({ createdAt, className }: Props) {
@@ -16,24 +21,11 @@ function Timestamp({ createdAt, className }: Props) {
         className
       )}
       date={createdAt}
-      formatter={(value, unit, suffix, epochMiliseconds, nextFormatter) => {
-        // Example: if its 7 min, return "7m", if its 7 hours, return "7h" like that
-        if (unit === "second") {
-          return `${value}${unit[0]}`;
-        } else if (unit === "minute") {
-          return `${value}${unit[0]}`;
-        } else if (unit === "hour") {
-          return `${value}${unit[0]}`;
-        } else if (unit === "day") {
-          return `${value}${unit[0]}`;
-        } else if (unit === "week") {
-          return `${value}${unit[0]}`;
-        } else if (unit === "month") {
-          return `${value}${unit[0]}`;
-        } else if (unit === "year") {
-          return `${value}${unit[0]}`;
+      formatter={(value, unit, suffix, epochMilliseconds, nextFormatter) => {
+        if (["second", "minute", "hour", "day", "week", "month", "year"].includes(unit)) {
+          return formatTimeUnit(value, unit);
         } else {
-          return nextFormatter?.(value, unit, suffix, epochMiliseconds);
+          return nextFormatter?.(value, unit, suffix, epochMilliseconds);
         }
       }}
     />

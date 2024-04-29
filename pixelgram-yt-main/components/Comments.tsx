@@ -1,22 +1,31 @@
-"use client";
+'use client';
 
-import { createComment } from "@/lib/actions";
-import { CommentWithExtras } from "@/lib/definitions";
-import { CreateComment } from "@/lib/schemas";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "@/components/ui/form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Comment } from "@prisma/client";
-import { User } from "next-auth";
-import Link from "next/link";
-import { useOptimistic, useTransition } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+} from '@/components/ui/form';
+import { createComment } from '@/lib/actions';
+import { CommentWithExtras } from '@/lib/definitions';
+import { CreateComment } from '@/lib/schemas';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Comment } from '@prisma/client';
+import data from '@emoji-mart/data';
+import Picker from '@emoji-mart/react';
+import { User } from 'next-auth';
+import Image from 'next/image';
+import Link from 'next/link';
+import {
+  useEffect,
+  useOptimistic,
+  useRef,
+  useState,
+  useTransition,
+} from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 function Comments({
   postId,
@@ -27,10 +36,13 @@ function Comments({
   comments: CommentWithExtras[];
   user?: User | null;
 }) {
+  const [showPicker, setShowPicker] = useState(false);
+  const pickerRef = useRef<HTMLDivElement>(null); 
+
   const form = useForm<z.infer<typeof CreateComment>>({
     resolver: zodResolver(CreateComment),
     defaultValues: {
-      body: "",
+      body: '',
       postId,
     },
   });
@@ -45,30 +57,54 @@ function Comments({
       ...state,
     ]
   );
-  const body = form.watch("body");
+  const body = form.watch('body');
   const commentsCount = optimisticComments.length;
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        pickerRef.current &&
+        event.target instanceof Node &&
+        !pickerRef.current.contains(event.target)
+      ) {
+        setShowPicker(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleEmojiSelect = (emoji: any) => {
+    const currentBody = form.getValues('body');
+    form.setValue('body', currentBody + emoji.native);
+    setShowPicker(false);
+  };
+
   return (
-    <div className="space-y-0.5 px-3 sm:px-0">
+    <div className='space-y-0.5 px-3 sm:px-0 relative'>
       {commentsCount > 1 && (
         <Link
           scroll={false}
           href={`/dashboard/p/${postId}`}
-          className="text-sm font-medium text-neutral-500"
+          className='text-sm font-medium text-neutral-500'
         >
           View all {commentsCount} comments
         </Link>
       )}
 
-      {optimisticComments.slice(0, 3).map((comment, i) => {
+      {optimisticComments.slice(0, 1).map((comment, i) => {
         const username = comment.user?.username;
 
         return (
           <div
             key={i}
-            className="text-sm flex items-center space-x-2 font-medium"
+            className='text-sm flex items-center space-x-2 font-medium'
           >
-            <Link href={`/dashboard/${username}`} className="font-semibold">
+            <Link href={`/dashboard/${username}`} className='font-semibold'>
               {username}
             </Link>
             <p>{comment.body}</p>
@@ -86,18 +122,18 @@ function Comments({
 
             await createComment(valuesCopy);
           })}
-          className="border-b border-gray-300 dark:border-neutral-800 pb-3 py-1 flex items-center space-x-2"
+          className='border-b border-gray-300 dark:border-neutral-800 pb-3 py-1 flex items-center space-x-2'
         >
           <FormField
             control={form.control}
-            name="body"
+            name='body'
             render={({ field, fieldState }) => (
-              <FormItem className="w-full flex">
+              <FormItem className='w-full flex'>
                 <FormControl>
                   <input
-                    type="text"
-                    placeholder="Add a comment..."
-                    className="bg-transparent text-sm border-none focus:outline-none flex-1 placeholder-neutral-500 dark:text-white dark:placeholder-neutral-400 font-medium"
+                    type='text'
+                    placeholder='Add a comment...'
+                    className='bg-transparent text-sm border-none focus:outline-none flex-1 placeholder-neutral-500 dark:text-white dark:placeholder-neutral-400 font-medium'
                     {...field}
                   />
                 </FormControl>
@@ -108,11 +144,31 @@ function Comments({
 
           {body.trim().length > 0 && (
             <button
-              type="submit"
-              className="text-sky-500 text-sm font-semibold hover:text-white disabled:hover:text-sky-500 disabled:cursor-not-allowed"
+              disabled={isPending}
+              type='submit'
+              className='text-sky-500 text-sm font-semibold hover:text-white disabled:hover:text-sky-500 disabled:cursor-not-allowed'
             >
               Post
             </button>
+          )}
+          <Image
+            className='emoji-icon invert'
+            alt='img'
+            src='https://icons.getbootstrap.com/assets/icons/emoji-smile.svg'
+            onClick={() => setShowPicker((val) => !val)}
+            width={20}
+            height={20}
+          />
+          {showPicker && (
+            <div ref={pickerRef} className='z-50 absolute left-96 bottom-10'>
+              <Picker
+                data={data}
+                onEmojiSelect={handleEmojiSelect}
+                emojiTooltip={true}
+                emojiSize={24}
+                perLine={8}
+              />
+            </div>
           )}
         </form>
       </Form>

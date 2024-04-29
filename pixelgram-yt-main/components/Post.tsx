@@ -12,6 +12,8 @@ import PostActions from "./PostActions";
 async function Post({ post }: { post: PostWithExtras }) {
   const session = await auth();
   const userId = session?.user?.id;
+  
+  
   const username = post.user.username;
 
   if (!session?.user) return null;
@@ -33,9 +35,14 @@ async function Post({ post }: { post: PostWithExtras }) {
               </span>
               <Timestamp createdAt={post.createdAt} />
             </p>
-            <p className="text-xs text-black dark:text-white font-medium">
-              Dubai, United Arab Emirates
-            </p>
+            {post.user.location ? (
+  <p className="text-xs text-black dark:text-white font-medium">
+    {post.user.location}
+  </p>
+) : (
+  <p className="text-xs text-gray-400">Location not provided</p>
+)}
+
           </div>
         </div>
 
