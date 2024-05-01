@@ -1,28 +1,30 @@
-"use client";
+'use client';
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
 import {
   Activity,
+  AtSign,
   Bookmark,
   ChevronLeft,
+  Info,
   LogOut,
   Menu,
   Moon,
   Settings,
   Sun,
-} from "lucide-react";
-import { signOut } from "next-auth/react";
-import { useTheme } from "next-themes";
-import { useEffect, useRef, useState } from "react";
-import { Button } from "./ui/button";
-import { Label } from "./ui/label";
-import { Switch } from "./ui/switch";
+} from 'lucide-react';
+import { signOut } from 'next-auth/react';
+import { useTheme } from 'next-themes';
+import { useEffect, useRef, useState } from 'react';
+import { Button } from './ui/button';
+import { Label } from './ui/label';
+import { Switch } from './ui/switch';
 
 function MoreDropdown() {
   const [showModeToggle, setShowModeToggle] = useState(false);
@@ -40,10 +42,10 @@ function MoreDropdown() {
       }
     }
 
-    document.addEventListener("mousedown", handleOutsideClick);
+    document.addEventListener('mousedown', handleOutsideClick);
 
     return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener('mousedown', handleOutsideClick);
     };
   }, [ref]);
 
@@ -52,75 +54,91 @@ function MoreDropdown() {
       <DropdownMenuTrigger asChild>
         <Button
           onClick={() => setOpen(!open)}
-          variant={"ghost"}
-          size={"lg"}
-          className="md:w-full !justify-start space-x-2 !px-3"
+          variant={'ghost'}
+          size={'lg'}
+          className={`md:w-full !outline-none !justify-start space-x-3 !px-3 !outline-0`}
         >
-          <Menu />
-          <div className="hidden lg:block">More</div>
+          <Menu className='size-8'/>
+          <div className={`hidden lg:block text-lg ${open ? 'font-bold' : 'font-medium'}`}>More</div>
         </Button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
         ref={ref}
         className={cn(
-          "dark:bg-neutral-800 w-64 !rounded-xl !p-0 transition-opacity",
-          !open && "opacity-0"
+          'dark:bg-neutral-800 w-64 !rounded-xl !p-0 transition-opacity',
+          !open && 'opacity-0'
         )}
-        align="end"
+        align='end'
         alignOffset={-40}
       >
         {!showModeToggle && (
           <>
-            <DropdownMenuItem className="menuItem">
+            <DropdownMenuItem className='menuItem'>
               <Settings size={20} />
               <p>Settings</p>
             </DropdownMenuItem>
-            <DropdownMenuItem className="menuItem">
+            <DropdownMenuItem className='menuItem'>
               <Activity size={20} />
               <p>Your activity</p>
             </DropdownMenuItem>
-            <DropdownMenuItem className="menuItem">
+            <DropdownMenuItem className='menuItem'>
               <Bookmark size={20} />
               <p>Saved</p>
             </DropdownMenuItem>
 
             <DropdownMenuItem
-              className="menuItem"
+              className='menuItem'
               onClick={() => setShowModeToggle(true)}
             >
               <Moon size={20} />
               <p>Switch appearance</p>
             </DropdownMenuItem>
-
-            <DropdownMenuItem className="menuItem" onClick={() => signOut()}>
-              <LogOut size={20} />
-              <p>Log out</p>
+            <DropdownMenuItem className='menuItem'>
+              <Info size={20} />
+              <p>Report a problem</p>
             </DropdownMenuItem>
+            <div className='border-t-8 border-[#363636]'>
+              <DropdownMenuItem className='menuItem'>
+                <AtSign/>
+                <p>Threads</p>
+              </DropdownMenuItem>
+            </div>
+            <div className='border-t-8 border-[#363636]'>
+              <DropdownMenuItem className='menuItem'>
+                <p>Switch accounts</p>
+              </DropdownMenuItem>
+            </div>
+            <div className='border-t-2 border-[#363636]'>
+              <DropdownMenuItem className='menuItem' onClick={() => signOut()}>
+                <LogOut size={20} />
+                <p>Log out</p>
+              </DropdownMenuItem>
+            </div>
           </>
         )}
 
         {showModeToggle && (
           <>
-            <div className="flex items-center border-b border-gray-200 dark:border-neutral-700 py-3.5 px-2.5">
+            <div className='flex items-center border-b border-gray-200 dark:border-neutral-700 py-3.5 px-2.5'>
               <ChevronLeft size={18} onClick={() => setShowModeToggle(false)} />
-              <p className="font-bold ml-1">Switch appearance</p>
-              {theme === "dark" ? (
-                <Moon size={20} className="ml-auto" />
+              <p className='font-bold ml-1'>Switch appearance</p>
+              {theme === 'dark' ? (
+                <Moon size={20} className='ml-auto' />
               ) : (
-                <Sun size={20} className="ml-auto" />
+                <Sun size={20} className='ml-auto' />
               )}
             </div>
 
-            <Label htmlFor="dark-mode" className="menuItem">
+            <Label htmlFor='dark-mode' className='menuItem'>
               Dark Mode
-              <DropdownMenuItem className="ml-auto !p-0">
+              <DropdownMenuItem className='ml-auto !p-0'>
                 <Switch
-                  id="dark-mode"
-                  className="ml-auto"
-                  checked={theme === "dark"}
+                  id='dark-mode'
+                  className='ml-auto'
+                  checked={theme === 'dark'}
                   onCheckedChange={(checked) => {
-                    setTheme(checked ? "dark" : "light");
+                    setTheme(checked ? 'dark' : 'light');
                   }}
                 />
               </DropdownMenuItem>

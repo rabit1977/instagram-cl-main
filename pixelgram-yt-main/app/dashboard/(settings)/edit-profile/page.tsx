@@ -18,8 +18,8 @@ async function EditProfile() {
   }
 
   return (
-    <div className="px-12">
-      <h1 className="text-2xl font-medium">Edit profile</h1>
+    <div className="">
+      <h1 className="text-2xl font-medium ml-10">Edit profile</h1>
 
       <ProfileForm profile={profile} />
     </div>

@@ -46,7 +46,7 @@ async function ProfileLayout({ children, params: { username } }: Props) {
   return (
     <>
       <ProfileHeader username={profile.username} />
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto mt-10">
         <div className="flex gap-x-5 md:gap-x-10 px-4">
           <ProfileAvatar user={profile}>
             <UserAvatar

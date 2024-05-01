@@ -10,14 +10,14 @@ const userAccounts = await fetchUserAccounts(1, 10);
   return (
     <>
       {/* Paginated user accounts */}
-      <div className='flex flex-wrap items-center justify-center mt-2 mb-6'>
+      <div className='flex flex-wrap items-center justify-center mt-20 md:mt-10 mb-6'>
         {userAccounts.map((user) => (
           <div key={user.id} className='flex flex-col items-center mx-2'>
             <Link href={`/dashboard/${user.username}`}>
-                <div className='flex items-center justify-center h-[90px] w-[90px] bg-gradient-to-tr from-yellow-500 to-red-800 rounded-full'>
+                <div className='flex items-center justify-center h-20 w-20 md:w-24 md:h-24 bg-gradient-to-tr from-yellow-500 to-red-800 rounded-full'>
                   <UserAvatar
                     user={user}
-                    className='flex items-center justify-center h-20 w-20 ring-2 ring-black'
+                    className='flex items-center justify-center md:h-[87px] md:w-[87px] h-[68px] w-[68px] ring-2 ring-black'
                   />
                 </div>
             </Link>
