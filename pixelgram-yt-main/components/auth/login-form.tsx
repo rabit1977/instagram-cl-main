@@ -6,7 +6,6 @@ import { useState, useTransition } from "react";
 import { useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { LoginSchema } from "@/schemas";
 import { Input } from "@/components/ui/input";
 import {
   Form,
@@ -21,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 import { login } from "@/actions/login";
+import { LoginSchema } from "@/lib/schemas";
 
 export const LoginForm = () => {
   const searchParams = useSearchParams();
