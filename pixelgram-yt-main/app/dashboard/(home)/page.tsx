@@ -1,3 +1,5 @@
+// DashboardPage.tsx
+
 import Posts from '@/components/Posts';
 import FeedSideSuggestions from '@/components/SideSuggestions';
 import { PostsSkeleton } from '@/components/Skeletons';
@@ -11,8 +13,9 @@ async function DashboardPage() {
   const profile = await fetchProfile(session?.user.username!);
 
   if (!profile) {
-    NotFound();
+    return <NotFound />; // Return the NotFound component if profile is null
   }
+
   return (
     <main className='flex '>
       <div className='flex flex-col xl:w-2/3 w-full gap-y-8 pb-20 mx-4'>

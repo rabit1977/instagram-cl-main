@@ -1,12 +1,12 @@
 // Unified NextAuth configuration
-import NextAuth from 'next-auth';
-import  authConfig  from '@/auth.config'; // Adjust the path to your actual auth configuration
+import authConfig from '@/auth.config'; // Adjust the path to your actual auth configuration
 import {
   DEFAULT_LOGIN_REDIRECT,
   apiAuthPrefix,
   authRoutes,
   publicRoutes,
 } from '@/routes'; // Adjust the paths to your actual routes
+import NextAuth from 'next-auth';
 
 const { auth } = NextAuth(authConfig);
 
@@ -49,10 +49,6 @@ export default auth((req) => {
 export const config = {
   matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
 };
-
-
-
-
 
 // import { withAuth } from "next-auth/middleware";
 

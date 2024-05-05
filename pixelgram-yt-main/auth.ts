@@ -1,31 +1,25 @@
-import { PrismaAdapter } from '@auth/prisma-adapter';
-import { UserRole } from '@prisma/client';
-import NextAuth from 'next-auth';
 import authConfig from '@/auth.config';
 import { getTwoFactorConfirmationByUserId } from '@/data/two-factor-confirmation';
 import { getUserById } from '@/data/user';
-import  prisma  from '@/lib/prisma';
+import prisma from '@/lib/prisma';
+import { PrismaAdapter } from '@auth/prisma-adapter';
+import { UserRole } from '@prisma/client';
+import NextAuth from 'next-auth';
 import { getAccountByUserId } from './data/account';
 
-export const {
-  handlers,
-  auth,
-  signIn,
-  signOut,
-  // update,
-} = NextAuth({
+export const { handlers, auth, signIn, signOut } = NextAuth({
   pages: {
     signIn: '/auth/login',
     error: '/auth/error',
   },
-  // events: {
-  //   async linkAccount({ user }) {
-  //     await prisma.user.update({
-  //       where: { id: user.id || '' },
-  //       data: { emailVerified: new Date() },
-  //     });
-  //   },
-  // },
+  events: {
+    async linkAccount({ user }) {
+      await prisma.user.update({
+        where: { id: user.id || '' },
+        data: { emailVerified: new Date() },
+      });
+    },
+  },
   callbacks: {
     async signIn({ user, account }) {
       // Allow OAuth without email verification
@@ -75,6 +69,7 @@ export const {
       return session;
     },
     async jwt({ token }) {
+      
       if (!token.sub) return token;
 
       const existingUser = await getUserById(token.sub);
@@ -96,15 +91,6 @@ export const {
   session: { strategy: 'jwt' },
   ...authConfig,
 });
-
-
-
-
-
-
-
-
-
 
 // import { PrismaAdapter } from "@auth/prisma-adapter";
 // import prisma from "@/lib/prisma";
@@ -142,37 +128,37 @@ export const {
 
 //       return session;
 //     },
-//     async jwt({ token, user }) {
-//       const prismaUser = await prisma.user.findFirst({
-//         where: {
-//           email: token.email,
-//         },
-//       });
+  //   async jwt({ token, user }) {
+  //     const prismaUser = await prisma.user.findFirst({
+  //       where: {
+  //         email: token.email,
+  //       },
+  //     });
 
-//       if (!prismaUser) {
-//         token.id = user.id;
-//         return token;
-//       }
-//       if (!prismaUser.username) {
-//         await prisma.user.update({
-//           where: {
-//             id: prismaUser.id,
-//           },
-//           data: {
-//             username: prismaUser.name?.split(" ").join("").toLowerCase(),
-//           },
-//         });
-//       }
+  //     if (!prismaUser) {
+  //       token.id = user.id;
+  //       return token;
+  //     }
+  //     if (!prismaUser.username) {
+  //       await prisma.user.update({
+  //         where: {
+  //           id: prismaUser.id,
+  //         },
+  //         data: {
+  //           username: prismaUser.name?.split(" ").join("").toLowerCase(),
+  //         },
+  //       });
+  //     }
 
-//       return {
-//         id: prismaUser.id,
-//         name: prismaUser.name,
-//         email: prismaUser.email,
-//         username: prismaUser.username,
-//         picture: prismaUser.image,
-//       };
-//     },
-//   },
+  //     return {
+  //       id: prismaUser.id,
+  //       name: prismaUser.name,
+  //       email: prismaUser.email,
+  //       username: prismaUser.username,
+  //       picture: prismaUser.image,
+  //     };
+  //   },
+  // },
 // } satisfies NextAuthOptions;
 
 // export default NextAuth(config);

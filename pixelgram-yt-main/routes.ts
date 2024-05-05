@@ -1,7 +1,7 @@
 // An array of routes that are accessible to the public
 // These routes do not require authentication
 export const publicRoutes = [
-  "/dashboard", // Root route
+  "/", // Root route
   "/auth/new-verification" // Route for new verification
 ];
 
