@@ -13,7 +13,6 @@ export default function LoginForm() {
         <h1 className={`${calSans.className} mb-3 text-2xl dark:text-black`}>
           Please log in to continue.
         </h1>
-
         <LoginButton />
       </div>
     </div>

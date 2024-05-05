@@ -1,10 +1,10 @@
-import { auth } from '@/auth';
 import Posts from '@/components/Posts';
 import FeedSideSuggestions from '@/components/SideSuggestions';
 import { PostsSkeleton } from '@/components/Skeletons';
 import { fetchProfile } from '@/lib/data';
 import { Suspense } from 'react';
 import NotFound from '../not-found';
+import { auth } from '@/auth';
 
 async function DashboardPage() {
   const session = await auth();

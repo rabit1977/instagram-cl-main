@@ -5,8 +5,6 @@ import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { RegisterSchema } from "@/schemas";
-import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -17,9 +15,11 @@ import {
 } from "@/components/ui/form";
 import { CardWrapper } from "@/components/auth/card-wrapper"
 import { Button } from "@/components/ui/button";
-import { FormError } from "@/components/form-error";
-import { FormSuccess } from "@/components/form-success";
+import { RegisterSchema } from "@/lib/schemas";
 import { register } from "@/actions/register";
+import { Input } from "../ui/input";
+import { FormError } from "../formErrors/form-error";
+import { FormSuccess } from "../formErrors/form-success";
 
 export const RegisterForm = () => {
   const [error, setError] = useState<string | undefined>("");
