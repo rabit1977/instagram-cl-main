@@ -61,6 +61,8 @@ model User {
     image         String?
     createdAt     DateTime    @default(now()) @map(name: "created_at")
     updatedAt     DateTime    @updatedAt @map(name: "updated_at")
+    location      String?     // Added this line
+    verifiedDate  DateTime?   // Added this line
     posts         Post[]
     saved         SavedPost[]
     likes         Like[]

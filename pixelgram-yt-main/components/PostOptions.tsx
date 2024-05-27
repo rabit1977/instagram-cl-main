@@ -3,11 +3,13 @@
 import SubmitButton from '@/components/SubmitButton';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { deletePost } from '@/lib/actions';
-import { PostWithExtras } from '@/lib/definitions';
+import { PostWithExtras, UserWithExtras } from '@/lib/definitions';
 import { cn } from '@/lib/utils';
 import { Link2, MoreHorizontal } from 'lucide-react';
 import Link from 'next/link';
+import { useState } from 'react';
 import { toast } from 'sonner';
+import AccountInfoDialog from './AccountInfoDialog'; // Import your AccountInfoDialog component
 
 type Props = {
   post: PostWithExtras;
@@ -16,10 +18,11 @@ type Props = {
 };
 
 function PostOptions({ post, userId, className }: Props) {
+  const [accountInfoOpen, setAccountInfoOpen] = useState(false);
   const isPostMine = post.userId === userId;
 
   return (
-    <Dialog >
+    <Dialog>
       <DialogTrigger asChild>
         <MoreHorizontal
           className={cn(
@@ -86,11 +89,23 @@ function PostOptions({ post, userId, className }: Props) {
           >
             Copy link
           </button>
-          <button className='w-full p-4 '>Embed</button>
-          <button className='w-full p-4 '>About this account</button>
+          <button
+            className='w-full p-4'
+            onClick={(e) => {
+              e.preventDefault();
+              setAccountInfoOpen(true);
+            }}
+          >
+            About this account
+          </button>
           <button className='w-full p-4 '>Cancel</button>
         </form>
       </DialogContent>
+      <AccountInfoDialog
+        user={post.user as UserWithExtras}
+        open={accountInfoOpen}
+        onOpenChange={setAccountInfoOpen}
+      />
     </Dialog>
   );
 }

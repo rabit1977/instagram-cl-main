@@ -11,51 +11,49 @@ import { Card } from './ui/card';
 
 async function Post({ post }: { post: PostWithExtras }) {
   const session = await auth();
+
+  // Use optional chaining for userId
   const userId = session?.user?.id;
 
   const username = post.user.username;
 
   if (!session?.user) return null;
-  
 
   return (
-    <div className='flex flex-col space-y-2.5 max-w-2xl  w-full mx-auto'>
-      <div className='flex items-center justify-between px-3 sm:px-0'>
-        <div className='flex space-x-3 items-center pb-2'>
+    <div className="flex flex-col space-y-2.5 max-w-2xl w-full mx-auto">
+      <div className="flex items-center justify-between px-3 sm:px-0">
+        <div className="flex space-x-3 items-center pb-2">
           <UserAvatar user={post.user} />
-          <div className='text-sm'>
-            <p className='space-x-1'>
-              <span className='font-semibold'>{username}</span>
-              <span
-                className='font-medium text-neutral-500 dark:text-neutral-400
-                      text-xs
-                    '
-              >
+          <div className="text-sm">
+            <p className="space-x-1">
+              <span className="font-semibold">{username}</span>
+              <span className="font-medium text-neutral-500 dark:text-neutral-400 text-xs">
                 •
               </span>
               <Timestamp createdAt={post.createdAt} />
             </p>
-              <p className='text-xs text-gray-400'>Location not provided</p>
+            <p className="text-xs text-gray-400">Location not provided</p>
           </div>
         </div>
-
         <PostOptions post={post} userId={userId} />
       </div>
 
-      <Card className='relative h-[450px] w-full overflow-hidden rounded-none sm:rounded-md'>
+      <Card className="relative h-[450px] w-full overflow-hidden rounded-none sm:rounded-md">
         <Image
           src={post.fileUrl}
-          alt='Post Image'
+          alt="Post Image"
           fill
-          className='sm:rounded-md object-cover'
+          className="sm:rounded-md object-cover"
+          // Leverage automatic image optimization
+          layout="fill"
         />
       </Card>
 
-      <PostActions post={post} userId={userId} className='px-3 sm:px-0' />
+      <PostActions post={post} userId={userId} className="px-3 sm:px-0" />
 
       {post.caption && (
-        <div className='text-sm leading-none flex items-center space-x-2 font-medium px-3 sm:px-0'>
-          <Link href={`/dashboard/${username}`} className='font-bold'>
+        <div className="text-sm leading-none flex items-center space-x-2 font-medium px-3 sm:px-0">
+          <Link href={`/dashboard/${username}`} className="font-bold">
             {username}
           </Link>
           <p>{post.caption}</p>

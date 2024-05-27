@@ -1,5 +1,5 @@
-'use client';
-
+'use client'
+// ProfileAvatar.tsx
 import {
   Dialog,
   DialogClose,
@@ -8,6 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import AccountInfoDialog from './AccountInfoDialog'; // Import AccountInfoDialog
 import { FormControl, FormField, FormItem } from '@/components/ui/form';
 import useMount from '@/hooks/useMount';
 import { updateProfile } from '@/lib/actions';
@@ -46,8 +47,9 @@ function ProfileAvatar({
     },
   });
   const inputRef = useRef<HTMLInputElement>(null);
-  const [open, setOpen] = useState(false);
+  const [openProfileDialog, setOpenProfileDialog] = useState(false);
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
+  const [openAccountInfoDialog, setOpenAccountInfoDialog] = useState(false); // State for AccountInfoDialog
   const mount = useMount();
   const pathname = usePathname();
 
@@ -60,12 +62,13 @@ function ProfileAvatar({
 
   const closeAllDialogs = () => {
     setRemoveDialogOpen(false);
-    setOpen(false);
+    setOpenProfileDialog(false);
+    setOpenAccountInfoDialog(false); // Close AccountInfoDialog
   };
 
   return (
     <>
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={openProfileDialog} onOpenChange={setOpenProfileDialog}>
         <DialogTrigger asChild>{children}</DialogTrigger>
 
         <DialogContent className='dialogContent rounded-3xl h-fit'>
@@ -104,7 +107,7 @@ function ProfileAvatar({
                   const { message } = await updateProfile(values);
                   toast(message);
 
-                  setOpen(false);
+                  setOpenProfileDialog(false);
                 })}
               >
                 <FormField
@@ -162,11 +165,20 @@ function ProfileAvatar({
             </Form>
           )}
 
-          <DialogClose className='postOption border-0 w-full p-3'>
+          <DialogClose
+            className='postOption border-0 w-full p-3'
+            onClick={() => { setOpenProfileDialog(false); }}
+          >
             Cancel
           </DialogClose>
         </DialogContent>
       </Dialog>
+
+      <AccountInfoDialog // Render AccountInfoDialog
+        user={user}
+        open={openAccountInfoDialog}
+        onOpenChange={setOpenAccountInfoDialog}
+      />
 
       <Dialog
         open={removeDialogOpen}
@@ -202,14 +214,14 @@ function ProfileAvatar({
             <DialogClose
               className='w-full p-4 font-medium'
               onClick={closeAllDialogs}
-            >
-              Cancel
-            </DialogClose>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </>
-  );
-}
-
-export default ProfileAvatar;
+              >
+                Cancel
+              </DialogClose>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </>
+    );
+  }
+  
+  export default ProfileAvatar;

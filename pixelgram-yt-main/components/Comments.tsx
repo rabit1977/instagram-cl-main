@@ -86,13 +86,13 @@ function Comments({
 
   return (
     <div className='space-y-0.5 px-3 sm:px-0 relative'>
-      {commentsCount > 1 && (
+      {commentsCount > 0 && (
         <Link
           scroll={false}
           href={`/dashboard/p/${postId}`}
           className='text-sm font-medium text-neutral-500'
         >
-          View all {commentsCount} comments
+          View {commentsCount === 1 ? 'comment': `all ${commentsCount} comments`}
         </Link>
       )}
 
