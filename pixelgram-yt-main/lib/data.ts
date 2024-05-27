@@ -1,5 +1,22 @@
-import { unstable_noStore as noStore } from "next/cache";
-import prisma from "./prisma";
+import { unstable_noStore as noStore } from 'next/cache';
+import prisma from './prisma';
+
+export async function fetchUserAccounts() {
+  noStore();
+
+  try {
+    const data = await prisma.user.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    return data;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch user accounts');
+  }
+}
 
 export async function fetchPosts() {
   // equivalent to doing fetch, cache: no-store
@@ -13,7 +30,7 @@ export async function fetchPosts() {
             user: true,
           },
           orderBy: {
-            createdAt: "desc",
+            createdAt: 'desc',
           },
         },
         likes: {
@@ -25,15 +42,14 @@ export async function fetchPosts() {
         user: true,
       },
       orderBy: {
-        createdAt: "desc",
+        createdAt: 'desc',
       },
     });
 
     return data;
-
   } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch posts");
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch posts');
   }
 }
 
@@ -51,7 +67,7 @@ export async function fetchPostById(id: string) {
             user: true,
           },
           orderBy: {
-            createdAt: "desc",
+            createdAt: 'desc',
           },
         },
         likes: {
@@ -66,8 +82,8 @@ export async function fetchPostById(id: string) {
 
     return data;
   } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch post");
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch post');
   }
 }
 
@@ -90,7 +106,7 @@ export async function fetchPostsByUsername(username: string, postId?: string) {
             user: true,
           },
           orderBy: {
-            createdAt: "desc",
+            createdAt: 'desc',
           },
         },
         likes: {
@@ -102,14 +118,14 @@ export async function fetchPostsByUsername(username: string, postId?: string) {
         user: true,
       },
       orderBy: {
-        createdAt: "desc",
+        createdAt: 'desc',
       },
     });
 
     return data;
   } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch posts");
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch posts');
   }
 }
 
@@ -124,12 +140,12 @@ export async function fetchProfile(username: string) {
       include: {
         posts: {
           orderBy: {
-            createdAt: "desc",
+            createdAt: 'desc',
           },
         },
         saved: {
           orderBy: {
-            createdAt: "desc",
+            createdAt: 'desc',
           },
         },
         followedBy: {
@@ -157,8 +173,8 @@ export async function fetchProfile(username: string) {
 
     return data;
   } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch profile");
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch profile');
   }
 }
 
@@ -180,7 +196,7 @@ export async function fetchSavedPostsByUsername(username: string) {
                 user: true,
               },
               orderBy: {
-                createdAt: "desc",
+                createdAt: 'desc',
               },
             },
             likes: {
@@ -194,33 +210,13 @@ export async function fetchSavedPostsByUsername(username: string) {
         },
       },
       orderBy: {
-        createdAt: "desc",
-      },
-    });
-
-    return data;
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch saved posts");
-  }
-}
-
-export async function fetchUserAccounts(pageNumber: number, pageSize: number) {
-  try {
-    const offset = (pageNumber - 1) * pageSize;
-    const data = await prisma.user.findMany({
-      skip: offset,
-      take: pageSize,
-      select: {
-        id: true,
-        username: true,
-        image: true,
+        createdAt: 'desc',
       },
     });
 
     return data;
   } catch (error) {
     console.error('Database Error:', error);
-    throw new Error('Failed to fetch user accounts');
+    throw new Error('Failed to fetch saved posts');
   }
 }

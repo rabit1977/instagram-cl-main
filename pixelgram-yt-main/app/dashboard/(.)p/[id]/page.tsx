@@ -10,7 +10,8 @@ type Props = {
 
 async function PostModal({ params: { id } }: Props) {
   const post = await fetchPostById(id);
-
+  console.log(post);
+  
   if (!post) {
     notFound();
   }

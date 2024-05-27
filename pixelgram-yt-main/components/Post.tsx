@@ -16,11 +16,12 @@ async function Post({ post }: { post: PostWithExtras }) {
   const username = post.user.username;
 
   if (!session?.user) return null;
+  
 
   return (
-    <div className='flex flex-col space-y-2.5 max-w-2xl w-full mx-auto'>
+    <div className='flex flex-col space-y-2.5 max-w-2xl  w-full mx-auto'>
       <div className='flex items-center justify-between px-3 sm:px-0'>
-        <div className='flex space-x-3 items-center'>
+        <div className='flex space-x-3 items-center pb-2'>
           <UserAvatar user={post.user} />
           <div className='text-sm'>
             <p className='space-x-1'>
@@ -34,13 +35,7 @@ async function Post({ post }: { post: PostWithExtras }) {
               </span>
               <Timestamp createdAt={post.createdAt} />
             </p>
-            {post.user.location ? (
-              <p className='text-xs text-black dark:text-white font-medium'>
-                {post.user.location}
-              </p>
-            ) : (
               <p className='text-xs text-gray-400'>Location not provided</p>
-            )}
           </div>
         </div>
 

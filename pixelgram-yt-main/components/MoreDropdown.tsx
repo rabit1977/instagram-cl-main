@@ -66,7 +66,7 @@ function MoreDropdown() {
       <DropdownMenuContent
         ref={ref}
         className={cn(
-          'dark:bg-neutral-800 w-64 !rounded-xl !p-0 transition-opacity',
+          'dark:bg-neutral-800 w-72 ml-4 !shadow-3xl border-0 !rounded-xl !px-0 transition-opacity',
           !open && 'opacity-0'
         )}
         align='end'
@@ -98,18 +98,18 @@ function MoreDropdown() {
               <Info size={20} />
               <p>Report a problem</p>
             </DropdownMenuItem>
-            <div className='border-t-8 border-[#363636]'>
+            <div className='border-t-8 dark:border-[#363636]'>
               <DropdownMenuItem className='menuItem'>
                 <AtSign/>
                 <p>Threads</p>
               </DropdownMenuItem>
             </div>
-            <div className='border-t-8 border-[#363636]'>
-              <DropdownMenuItem className='menuItem'>
+            <div className='border-t-8 dark:border-[#363636]'>
+              <DropdownMenuItem className='menuItem h-16'>
                 <p>Switch accounts</p>
               </DropdownMenuItem>
             </div>
-            <div className='border-t-2 border-[#363636]'>
+            <div className='border-t dark:border-[#363636]'>
               <DropdownMenuItem className='menuItem' onClick={() => signOut()}>
                 <LogOut size={20} />
                 <p>Log out</p>

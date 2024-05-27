@@ -8,18 +8,13 @@ datasource db {
     relationMode = "prisma"
 }
 
-enum UserRole {
-  ADMIN
-  USER
-}
-
 model VerificationToken {
     id         Int      @id @default(autoincrement())
-    email String?
+    identifier String
     token      String   @unique
     expires    DateTime
 
-    @@unique([email, token])
+    @@unique([identifier, token])
 }
 
 model Account {
@@ -56,15 +51,12 @@ model Session {
 
 model User {
     id            String      @id @default(cuid())
-    user_id       String   @unique
     name          String?
     username      String?     @unique
     bio           String?
     website       String?
     gender        String?
     email         String?     @unique
-    password      String?
-    role          UserRole    @default(USER)
     emailVerified DateTime?
     image         String?
     createdAt     DateTime    @default(now()) @map(name: "created_at")
@@ -77,37 +69,8 @@ model User {
     following     Follows[]   @relation("follower")
     accounts      Account[]
     sessions      Session[]
-    location      String?  // Add this line for the location field
-    isTwoFactorEnabled Boolean @default(false)
-    twoFactorConfirmation TwoFactorConfirmation?
 
     @@map(name: "users")
-}
-
-model PasswordResetToken {
-  id String @id @default(cuid())
-  email String
-  token String @unique
-  expires DateTime
-
-  @@unique([email, token])
-}
-
-model TwoFactorToken {
-  id String @id @default(cuid())
-  email String
-  token String @unique
-  expires DateTime
-
-  @@unique([email, token])
-}
-
-model TwoFactorConfirmation {
-  id String @id @default(cuid())
-  userId String
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId])
 }
 
 model Follows {
@@ -125,7 +88,7 @@ model Post {
     id        String      @id @default(cuid())
     createdAt DateTime    @default(now())
     updatedAt DateTime    @updatedAt
-    caption   String?
+    caption   String
     fileUrl   String      @unique
     likes     Like[]
     savedBy   SavedPost[]

@@ -133,7 +133,7 @@ function Comments({
                   <input
                     type='text'
                     placeholder='Add a comment...'
-                    className='bg-transparent text-sm border-none focus:outline-none flex-1 placeholder-neutral-500 dark:text-white dark:placeholder-neutral-400 font-medium'
+                    className='bg-transparent text-sm border-none  focus:outline-none flex-1 placeholder-neutral-500 dark:text-white dark:placeholder-neutral-400 font-medium'
                     {...field}
                   />
                 </FormControl>
