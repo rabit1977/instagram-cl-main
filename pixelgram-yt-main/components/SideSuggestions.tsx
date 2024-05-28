@@ -22,7 +22,7 @@ function FeedSideSuggestions  ({ profile }: { profile: UserWithExtras }) {
     },
   });
   return (
-    <article className="mt-10 max-w-md w-full">
+    <article className="hidden mt-10 max-w-md 2xl:block w-full">
        <div className='items-center justify-between gap-x-24 2xl:flex py-5 rounded-2xl'>
         <div className='flex gap-x-2 items-center'>
           <ProfileAvatar user={profile}>

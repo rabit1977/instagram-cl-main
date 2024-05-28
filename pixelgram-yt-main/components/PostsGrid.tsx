@@ -13,7 +13,7 @@ function PostsGrid({ posts }: { posts: PostWithExtras[] | undefined }) {
   }
 
   return (
-    <div className="grid grid-cols-3 gap-0.5">
+    <div className="grid grid-cols-3 gap-2xl:mx-0 mx-3">
       {posts?.map((post) => (
         <Link
           href={`/dashboard/p/${post.id}`}

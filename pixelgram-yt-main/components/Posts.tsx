@@ -2,7 +2,7 @@ import { fetchPosts, fetchUserAccounts } from "@/lib/data";
 import Post from "./Post";
 import Link from "next/link";
 import UserAvatar from "./UserAvatar";
-import SearchPosts from "./SearchPosts";
+
 
 async function Posts() {
   const posts = await fetchPosts();
