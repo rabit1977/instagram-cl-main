@@ -1,16 +1,17 @@
 import { unstable_noStore as noStore } from 'next/cache';
+import { UserWithExtras } from './definitions';
 import prisma from './prisma';
 
-export async function fetchUserAccounts() {
-  noStore();
-
+export async function fetchUserAccounts(): Promise<UserWithExtras[]> {
   try {
-    const data = await prisma.user.findMany({
+    const users = await prisma.user.findMany({
       orderBy: {
         createdAt: 'desc',
       },
       select: {
         id: true,
+        createdAt: true,
+        updatedAt: true,
         name: true,
         username: true,
         bio: true,
@@ -19,14 +20,13 @@ export async function fetchUserAccounts() {
         email: true,
         emailVerified: true,
         image: true,
-        createdAt: true,
-        updatedAt: true,
-        location: true, // Include location
-        verifiedDate: true, // Include verifiedDate
+        location: true,
+        verifiedDate: true,
+        // Add any other necessary fields here
       },
     });
 
-    return data;
+    return users as UserWithExtras[]; // Ensure the returned data matches UserWithExtras type
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch user accounts');
@@ -425,10 +425,44 @@ export async function fetchSavedPostsByUsername(username: string) {
     throw new Error('Failed to fetch profile');
   }
 }
+export async function fetchCommentsByPostId(postId: string) {
+  noStore();
 
+  try {
+    const comments = await prisma.comment.findMany({
+      where: {
+        postId,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            bio: true,
+            website: true,
+            gender: true,
+            email: true,
+            emailVerified: true,
+            image: true,
+            createdAt: true,
+            updatedAt: true,
+            location: true,
+            verifiedDate: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'asc', // Ascending order for reply order
+      },
+    });
 
-
-
+    return comments;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch comments');
+  }
+}
 
 // import { unstable_noStore as noStore } from 'next/cache';
 // import prisma from './prisma';
@@ -519,7 +553,7 @@ export async function fetchSavedPostsByUsername(username: string) {
 //   }
 // }
 
-// export async function fetchPostsByUsername(username: string, postId?: string) {
+// export async function ByUsername(username: string, postId?: string) {
 //   noStore();
 
 //   try {

@@ -10,6 +10,9 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+ /* * {
+  border: 1px solid red;
+ } */
 
 @layer base {
   :root {

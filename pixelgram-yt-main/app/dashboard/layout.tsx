@@ -10,7 +10,7 @@ export default function DashboardLayout({
       <div className="hidden md:flex lg:w-64 2xl:w-80 border-r">
         <SideNav />
       </div>
-      <div className="flex-grow md:mt-0 flex-1 w-full md:overflow-y-auto no-scrollbar ">
+      <div className="flex-grow mt-8 flex-1 w-full md:overflow-y-auto no-scrollbar ">
         {children}
       </div>
     </div>
