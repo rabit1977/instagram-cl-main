@@ -11,14 +11,12 @@ import UserAvatar from './UserAvatar';
 function MiniPost({ post }: { post: PostWithExtras }) {
   const username = post.user.username;
   const href = `/dashboard/${username}`;
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const user = session?.user;
-
-  if (!user) return null;
 
   return (
     <div className='flex items-center justify-between'>
-      <div className='group p-3 px-3.5  flex items-start space-x-2.5'>
+      <div className='group p-3 px-3.5 flex items-start space-x-2.5'>
         <Link href={href}>
           <UserAvatar user={post.user} />
         </Link>
@@ -33,7 +31,7 @@ function MiniPost({ post }: { post: PostWithExtras }) {
             <Timestamp createdAt={post.createdAt} />
             <PostOptions
               post={post}
-              userId={user.id}
+              userId={user?.id}
               className='hidden group-hover:inline'
             />
           </div>
@@ -41,7 +39,7 @@ function MiniPost({ post }: { post: PostWithExtras }) {
       </div>
       <LikeButton
         post={post}
-        userId={user.id}
+        userId={user?.id}
         showLikesText={false}
         iconSize='h-4 w-4 hover:opacity-70'
       />

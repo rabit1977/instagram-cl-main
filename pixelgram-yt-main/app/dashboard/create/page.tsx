@@ -33,6 +33,7 @@ import { z } from 'zod';
 
 function CreatePage() {
   const [fileSelected, setFileSelected] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined); // New state for the preview URL
   const pathname = usePathname();
   const isCreatePage = pathname === '/dashboard/create';
   const router = useRouter();
@@ -48,15 +49,22 @@ function CreatePage() {
 
   if (!mount) return null;
 
+  const handleFileSelection = (file: File) => {
+    // Create a preview URL from the selected file
+    const preview = URL.createObjectURL(file);
+    setPreviewUrl(preview);
+    setFileSelected(true);
+  };
+
   return (
-    <div className='flex flex-col justify-center items-center'>
+    <div className="flex flex-col justify-center items-center">
       <Dialog
         open={isCreatePage}
         onOpenChange={(open) => !open && router.back()}
       >
-        <DialogContent className='dark:bg-[#262626] shadow-xl'>
+        <DialogContent className="dark:bg-[#262626] shadow-xl">
           <DialogHeader>
-            <DialogTitle className='text-center border-b dark:border-b-[#363636] p-4 w-full text-lg font-medium tracking-wide'>
+            <DialogTitle className="text-center border-b dark:border-b-[#363636] p-4 w-full text-lg font-medium tracking-wide">
               Create new post
             </DialogTitle>
           </DialogHeader>
@@ -69,42 +77,52 @@ function CreatePage() {
                   return toast.error(<Error res={res} />);
                 }
               })}
-              className='space-y-4'
+              className="space-y-4"
             >
-              {!!fileUrl ? (
-                <div className='h-96 md:h-[450px] overflow-hidden rounded-md'>
-                  <AspectRatio ratio={1 / 1} className='relative h-full'>
+              {!!previewUrl ? (
+                <div className="h-96 md:h-[450px] overflow-hidden rounded-md">
+                  <AspectRatio ratio={1 / 1} className="relative h-full">
                     <Image
-                      src={fileUrl}
-                      alt='Post preview'
+                      src={previewUrl}
+                      alt="Post preview"
                       fill
-                      className='rounded-md object-cover'
+                      className="rounded-md object-cover"
                     />
                   </AspectRatio>
                 </div>
               ) : (
                 <FormField
                   control={form.control}
-                  name='fileUrl'
+                  name="fileUrl"
                   render={({ field, fieldState }) => (
-                    <FormItem>
-                      <FormDescription className='text-2xl text-center pb-3'>
+                    <FormItem className="flex flex-col items-center">
+                      <FormDescription className="text-2xl text-center pb-3 font-light text-white">
                         Drag photos and videos here.
                       </FormDescription>
                       <FormMessage />
                       <FormControl>
-                        <UploadButton
-                          endpoint='imageUploader'
-                          onClientUploadComplete={(res) => {
-                            form.setValue('fileUrl', res[0].url);
-                            toast.success('Upload complete');
-                            setFileSelected(true); // Set fileSelected to true
-                          }}
-                          onUploadError={(error: Error) => {
-                            console.error(error);
-                            toast.error('Upload failed');
-                          }}
-                        />
+                        <label className="cursor-pointer flex max-w-xs justify-center bg-blue-600 py-3 px-5 rounded-lg hover:bg-blue-500">
+                          Select from computer
+                          <UploadButton
+                            endpoint="imageUploader"
+                            className="hidden"
+                            onClientUploadComplete={(res) => {
+                              form.setValue('fileUrl', res[0].url);
+                              setPreviewUrl(res[0].url); // Update preview URL with the uploaded file URL
+                              toast.success('Upload complete');
+                              setFileSelected(true);
+                            }}
+                            onUploadError={(error: Error) => {
+                              console.error(error);
+                              toast.error('Upload failed');
+                            }}
+                            onFileInputChange={(files) => {
+                              if (files && files[0]) {
+                                handleFileSelection(files[0]); // Show preview immediately on file selection
+                              }
+                            }}
+                          />
+                        </label>
                       </FormControl>
                     </FormItem>
                   )}
@@ -114,15 +132,15 @@ function CreatePage() {
               {!!fileUrl && (
                 <FormField
                   control={form.control}
-                  name='caption'
+                  name="caption"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel htmlFor='caption'>Caption</FormLabel>
+                      <FormLabel htmlFor="caption">Caption</FormLabel>
                       <FormControl>
                         <Input
-                          type='caption'
-                          id='caption'
-                          placeholder='Write a caption...'
+                          type="caption"
+                          id="caption"
+                          placeholder="Write a caption..."
                           {...field}
                         />
                       </FormControl>
@@ -132,7 +150,10 @@ function CreatePage() {
                 />
               )}
               {!!fileUrl && fileSelected && (
-               <Button type='submit' disabled={form.formState.isSubmitting}>
+                <Button
+                  type="submit"
+                  disabled={form.formState.isSubmitting}
+                >
                   Create Post
                 </Button>
               )}

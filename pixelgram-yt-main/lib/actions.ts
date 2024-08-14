@@ -17,8 +17,12 @@ import {
   UpdateUser,
 } from "./schemas";
 
+
+
+
 export async function createPost(values: z.infer<typeof CreatePost>) {
   const userId = await getUserId();
+  console.log(userId)
 
   const validatedFields = CreatePost.safeParse(values);
 

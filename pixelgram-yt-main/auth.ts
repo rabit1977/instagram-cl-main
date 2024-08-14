@@ -1,80 +1,69 @@
-import { PrismaAdapter } from "@auth/prisma-adapter";
-import prisma from "@/lib/prisma";
-import GoogleProvider from "next-auth/providers/google";
-import NextAuth, { getServerSession, type NextAuthOptions } from "next-auth";
-import {
-  GetServerSidePropsContext,
-  NextApiRequest,
-  NextApiResponse,
-} from "next";
+// Import necessary dependencies
+import NextAuth from "next-auth"
+import { PrismaAdapter } from "@auth/prisma-adapter"
+import prisma from "@/lib/prisma"
+import authConfig from "./auth.config"
 
-export const config = {
-  pages: {
-    signIn: "/login",
-  },
+// Export Auth.js handlers, auth function, signIn, and signOut
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  // Use PrismaAdapter for database integration
   adapter: PrismaAdapter(prisma),
-  providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-  ],
-  session: {
-    strategy: "jwt",
-  },
+  // Set session strategy to JWT
+  session: { strategy: "jwt" },
+  // Spread the configuration from auth.config.ts
+  ...authConfig,
+  // Define callbacks for session and JWT handling
   callbacks: {
-    async session({ session, token }) {
-      if (token) {
-        session.user.id = token.id;
-        session.user.name = token.name;
-        session.user.email = token.email;
-        session.user.image = token.picture;
-        session.user.username = token.username;
+    // Spread callbacks from auth.config.ts
+    ...authConfig.callbacks,
+    // Session callback to customize session object
+    session: async ({ session, token }) => {
+      if (token && session.user) {
+        // Add user details to the session
+        session.user.id = token.sub ?? token.id as string
+        session.user.name = token.name
+        session.user.email = token.email ?? ""
+        session.user.image = token.picture
+        session.user.username = token.username as string | undefined
       }
-
-      return session;
+      return session
     },
-    async jwt({ token, user }) {
+    // JWT callback to customize JWT token
+    jwt: async ({ token, user }) => {
+      if (user) {
+        // Add user id to token
+        token.id = user.id
+      }
+      
+      // Find user in database
       const prismaUser = await prisma.user.findFirst({
         where: {
-          email: token.email,
+          email: token.email ?? "",
         },
-      });
-
+      })
+    
       if (!prismaUser) {
-        token.id = user.id;
-        return token;
+        return token
       }
+    
+      // If user doesn't have a username, create one
       if (!prismaUser.username) {
         await prisma.user.update({
           where: {
             id: prismaUser.id,
           },
           data: {
-            username: prismaUser.name?.split(" ").join("").toLowerCase(),
+            username: prismaUser.name?.split(" ").join("").toLowerCase() ?? null,
           },
-        });
+        })
       }
-
+    
+      // Return token with additional user information
       return {
+        ...token,
         id: prismaUser.id,
-        name: prismaUser.name,
-        email: prismaUser.email,
-        username: prismaUser.username,
-        picture: prismaUser.image,
-      };
+        username: prismaUser.username ?? null,
+      }
     },
   },
-} satisfies NextAuthOptions;
-
-export default NextAuth(config);
-
-// Use it in server contexts
-export function auth(
-  ...args:
-    | [GetServerSidePropsContext["req"], GetServerSidePropsContext["res"]]
-    | [NextApiRequest, NextApiResponse]
-    | []
-) {
-  return getServerSession(...args, config);
-}
+})
