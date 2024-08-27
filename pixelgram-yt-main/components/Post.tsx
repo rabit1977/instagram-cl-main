@@ -11,7 +11,7 @@ import { Card } from './ui/card';
 
 async function Post({ post }: { post: PostWithExtras }) {
   const session = await auth();
-
+  console.log('Post data:', post);
   // Use optional chaining for userId
   const userId = session?.user?.id;
 
@@ -32,7 +32,9 @@ async function Post({ post }: { post: PostWithExtras }) {
               </span>
               <Timestamp createdAt={post.createdAt} />
             </p>
-            <p className="text-xs text-gray-400">Location not provided</p>
+            <p className="text-xs text-gray-400">
+              {post.user.location ? post.user.location : 'Location not provided'}
+            </p>
           </div>
         </div>
         <PostOptions post={post} userId={userId} />
@@ -44,7 +46,6 @@ async function Post({ post }: { post: PostWithExtras }) {
           alt="Post Image"
           fill
           className="sm:rounded-md object-cover"
-          // Leverage automatic image optimization
           layout="fill"
         />
       </Card>

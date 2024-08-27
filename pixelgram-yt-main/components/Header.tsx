@@ -2,6 +2,10 @@ import { calSans } from '@/app/fonts';
 import { Heart, Search } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from './ui/button';
+import UserProfile from './UserProfile';
+import SearchPosts from './SearchPosts';
+
+
 
 function Header() {
   return (
@@ -15,11 +19,7 @@ function Header() {
       <div className='flex items-center space-x-2'>
         <div className='flex items-center text-neutral-600 dark:text-neutral-400 bg-zinc-100 dark:bg-neutral-800 gap-x-2 rounded-md px-3.5 py-1.5'>
           <Search className='size-4' />
-          <input
-            type='text'
-            placeholder='Search'
-            className='bg-transparent placeholder:text-neutral-600 dark:placeholder:text-neutral-400 flex-1 outline-none'
-          />
+          <SearchPosts/>
         </div>
         <Button size={'icon'} variant={'ghost'}>
           <Heart />

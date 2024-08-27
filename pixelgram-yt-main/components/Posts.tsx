@@ -7,7 +7,7 @@ import UserAvatar from "./UserAvatar";
 async function Posts() {
   const posts = await fetchPosts();
 // Fetch user accounts
-const userAccounts = await fetchUserAccounts();
+const userAccounts = await fetchUserAccounts("");
   return (
     <>
       {/* Paginated user accounts */}

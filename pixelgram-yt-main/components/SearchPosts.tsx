@@ -2,27 +2,28 @@
 
 import { ChangeEvent, useState, useEffect } from 'react';
 import { useDebounce } from 'use-debounce';
-import { fetchProfile } from '@/lib/data'; // Ensure the import path is correct
-import UserProfile from './UserProfile';
+import { fetchUserAccounts } from '@/lib/data';
+import UserAvatar from './UserAvatar';
+import Link from 'next/link';
 
 function SearchPosts() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [profile, setProfile] = useState<any>(null); // Store the fetched profile
-  const [debouncedSearchTerm] = useDebounce(searchTerm, 300);
+  const [profiles, setProfiles] = useState<any[]>([]); // Array to store multiple profiles
+  const [debouncedSearchTerm] = useDebounce(searchTerm, 100);
 
   useEffect(() => {
     const fetchProfileData = async () => {
       if (debouncedSearchTerm.trim() !== '') {
         try {
-          const fetchedProfile = await fetchProfile(debouncedSearchTerm);
-          console.log('Fetched Profile:', fetchedProfile);
-          setProfile(fetchedProfile);
+          const fetchedProfiles = await fetchUserAccounts(debouncedSearchTerm);
+          console.log('Fetched Profiles:', fetchedProfiles);
+          setProfiles(fetchedProfiles);
         } catch (error) {
-          console.error('Error fetching profile:', error);
-          setProfile(null); // Reset profile in case of error
+          console.error('Error fetching profiles:', error);
+          setProfiles([]); // Reset profiles in case of error
         }
       } else {
-        setProfile(null); // Clear profile if search term is empty
+        setProfiles([]); // Clear profiles if search term is empty
       }
     };
 
@@ -35,7 +36,7 @@ function SearchPosts() {
 
   const clearSearch = () => {
     setSearchTerm('');
-    setProfile(null);
+    setProfiles([]);
   };
 
   return (
@@ -45,7 +46,7 @@ function SearchPosts() {
         placeholder="Search profiles..."
         value={searchTerm}
         onChange={handleSearch}
-        className="pr-10 py-2 border rounded-md w-full"
+        className="pr-10 py-2 border rounded-md w-full bg-transparent outline-none"
       />
       {searchTerm && (
         <button
@@ -56,9 +57,24 @@ function SearchPosts() {
           &times;
         </button>
       )}
-      {profile ? (
+      {profiles.length > 0 ? (
         <div className="absolute mt-2 w-full bg-white border border-gray-300 shadow-lg rounded-md z-10">
-          <UserProfile key={profile.id} profile={profile} />
+          {profiles.map((user) => (
+            <Link href={`/dashboard/${user.username}`} key={user.id}>
+              <div className='flex items-center p-2 border-b border-gray-200'>
+                <div className='flex items-center justify-center h-10 w-10 md:w-12 md:h-12 bg-gradient-to-tr from-yellow-500 to-red-800 rounded-full mr-2'>
+                  <UserAvatar
+                    user={user}
+                    className='flex items-center justify-center md:h-[43px] md:w-[43px] h-[34px] w-[34px] ring-2 ring-black'
+                  />
+                </div>
+                <div>
+                  <p className='font-semibold'>{user.name ?? 'No Name'}</p>
+                  <p className='text-sm text-gray-500'>@{user.username ?? 'No Username'}</p>
+                </div>
+              </div>
+            </Link>
+          ))}
         </div>
       ) : (
         searchTerm && (

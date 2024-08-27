@@ -1,10 +1,10 @@
-"use server";
+'use server';
 
-import prisma from "@/lib/prisma";
-import { getUserId } from "@/lib/utils";
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-import { z } from "zod";
+import prisma from '@/lib/prisma';
+import { getUserId } from '@/lib/utils';
+import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
+import { z } from 'zod';
 import {
   BookmarkSchema,
   CreateComment,
@@ -15,27 +15,34 @@ import {
   LikeSchema,
   UpdatePost,
   UpdateUser,
-} from "./schemas";
-
-
-
+} from './schemas';
 
 export async function createPost(values: z.infer<typeof CreatePost>) {
   const userId = await getUserId();
-  console.log(userId)
+  console.log(userId);
 
   const validatedFields = CreatePost.safeParse(values);
 
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: "Missing Fields. Failed to Create Post.",
+      message: 'Missing Fields. Failed to Create Post.',
     };
   }
 
-  const { fileUrl, caption } = validatedFields.data;
+  const { fileUrl } = validatedFields.data;
+  const caption = validatedFields.data?.caption || '';
 
   try {
+    // Fetch the user's location if needed
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { location: true }, // Get the user's location
+    });
+
+    // Optionally, you can log the user's location
+    console.log('User Location:', user?.location);
+
     await prisma.post.create({
       data: {
         caption,
@@ -45,23 +52,36 @@ export async function createPost(values: z.infer<typeof CreatePost>) {
             id: userId,
           },
         },
+        // If you want to store the location in the post, you can do so here
+        // location: user?.location, // Uncomment if you want to store location in the post
       },
     });
   } catch (error) {
     return {
-      message: "Database Error: Failed to Create Post.",
+      message: 'Database Error: Failed to Create Post.',
     };
   }
 
-  revalidatePath("/dashboard");
-  redirect("/dashboard");
+  revalidatePath('/dashboard');
+  redirect('/dashboard');
+}
+
+export async function updateUserLocation(userId: string, location: string) {
+  try {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { location },
+    });
+  } catch (error) {
+    console.error('Error updating user location:', error);
+  }
 }
 
 export async function deletePost(formData: FormData) {
   const userId = await getUserId();
 
   const { id } = DeletePost.parse({
-    id: formData.get("id"),
+    id: formData.get('id'),
   });
 
   const post = await prisma.post.findUnique({
@@ -72,7 +92,7 @@ export async function deletePost(formData: FormData) {
   });
 
   if (!post) {
-    throw new Error("Post not found");
+    throw new Error('Post not found');
   }
 
   try {
@@ -81,10 +101,10 @@ export async function deletePost(formData: FormData) {
         id,
       },
     });
-    revalidatePath("/dashboard");
-    return { message: "Deleted Post." };
+    revalidatePath('/dashboard');
+    return { message: 'Deleted Post.' };
   } catch (error) {
-    return { message: "Database Error: Failed to Delete Post." };
+    return { message: 'Database Error: Failed to Delete Post.' };
   }
 }
 
@@ -96,7 +116,7 @@ export async function likePost(value: FormDataEntryValue | null) {
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: "Missing Fields. Failed to Like Post.",
+      message: 'Missing Fields. Failed to Like Post.',
     };
   }
 
@@ -109,7 +129,7 @@ export async function likePost(value: FormDataEntryValue | null) {
   });
 
   if (!post) {
-    throw new Error("Post not found");
+    throw new Error('Post not found');
   }
 
   const like = await prisma.like.findUnique({
@@ -131,10 +151,10 @@ export async function likePost(value: FormDataEntryValue | null) {
           },
         },
       });
-      revalidatePath("/dashboard");
-      return { message: "Unliked Post." };
+      revalidatePath('/dashboard');
+      return { message: 'Unliked Post.' };
     } catch (error) {
-      return { message: "Database Error: Failed to Unlike Post." };
+      return { message: 'Database Error: Failed to Unlike Post.' };
     }
   }
 
@@ -145,10 +165,10 @@ export async function likePost(value: FormDataEntryValue | null) {
         userId,
       },
     });
-    revalidatePath("/dashboard");
-    return { message: "Liked Post." };
+    revalidatePath('/dashboard');
+    return { message: 'Liked Post.' };
   } catch (error) {
-    return { message: "Database Error: Failed to Like Post." };
+    return { message: 'Database Error: Failed to Like Post.' };
   }
 }
 
@@ -160,7 +180,7 @@ export async function bookmarkPost(value: FormDataEntryValue | null) {
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: "Missing Fields. Failed to Bookmark Post.",
+      message: 'Missing Fields. Failed to Bookmark Post.',
     };
   }
 
@@ -173,7 +193,7 @@ export async function bookmarkPost(value: FormDataEntryValue | null) {
   });
 
   if (!post) {
-    throw new Error("Post not found.");
+    throw new Error('Post not found.');
   }
 
   const bookmark = await prisma.savedPost.findUnique({
@@ -195,11 +215,11 @@ export async function bookmarkPost(value: FormDataEntryValue | null) {
           },
         },
       });
-      revalidatePath("/dashboard");
-      return { message: "Unbookmarked Post." };
+      revalidatePath('/dashboard');
+      return { message: 'Unbookmarked Post.' };
     } catch (error) {
       return {
-        message: "Database Error: Failed to Unbookmark Post.",
+        message: 'Database Error: Failed to Unbookmark Post.',
       };
     }
   }
@@ -211,11 +231,11 @@ export async function bookmarkPost(value: FormDataEntryValue | null) {
         userId,
       },
     });
-    revalidatePath("/dashboard");
-    return { message: "Bookmarked Post." };
+    revalidatePath('/dashboard');
+    return { message: 'Bookmarked Post.' };
   } catch (error) {
     return {
-      message: "Database Error: Failed to Bookmark Post.",
+      message: 'Database Error: Failed to Bookmark Post.',
     };
   }
 }
@@ -228,7 +248,7 @@ export async function createComment(values: z.infer<typeof CreateComment>) {
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: "Missing Fields. Failed to Create Comment.",
+      message: 'Missing Fields. Failed to Create Comment.',
     };
   }
 
@@ -241,7 +261,7 @@ export async function createComment(values: z.infer<typeof CreateComment>) {
   });
 
   if (!post) {
-    throw new Error("Post not found");
+    throw new Error('Post not found');
   }
 
   try {
@@ -252,10 +272,10 @@ export async function createComment(values: z.infer<typeof CreateComment>) {
         userId,
       },
     });
-    revalidatePath("/dashboard");
-    return { message: "Created Comment." };
+    revalidatePath('/dashboard');
+    return { message: 'Created Comment.' };
   } catch (error) {
-    return { message: "Database Error: Failed to Create Comment." };
+    return { message: 'Database Error: Failed to Create Comment.' };
   }
 }
 
@@ -263,7 +283,7 @@ export async function deleteComment(formData: FormData) {
   const userId = await getUserId();
 
   const { id } = DeleteComment.parse({
-    id: formData.get("id"),
+    id: formData.get('id'),
   });
 
   const comment = await prisma.comment.findUnique({
@@ -274,7 +294,7 @@ export async function deleteComment(formData: FormData) {
   });
 
   if (!comment) {
-    throw new Error("Comment not found");
+    throw new Error('Comment not found');
   }
 
   try {
@@ -283,10 +303,10 @@ export async function deleteComment(formData: FormData) {
         id,
       },
     });
-    revalidatePath("/dashboard");
-    return { message: "Deleted Comment." };
+    revalidatePath('/dashboard');
+    return { message: 'Deleted Comment.' };
   } catch (error) {
-    return { message: "Database Error: Failed to Delete Comment." };
+    return { message: 'Database Error: Failed to Delete Comment.' };
   }
 }
 
@@ -298,7 +318,7 @@ export async function updatePost(values: z.infer<typeof UpdatePost>) {
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: "Missing Fields. Failed to Update Post.",
+      message: 'Missing Fields. Failed to Update Post.',
     };
   }
 
@@ -312,7 +332,7 @@ export async function updatePost(values: z.infer<typeof UpdatePost>) {
   });
 
   if (!post) {
-    throw new Error("Post not found");
+    throw new Error('Post not found');
   }
 
   try {
@@ -326,11 +346,11 @@ export async function updatePost(values: z.infer<typeof UpdatePost>) {
       },
     });
   } catch (error) {
-    return { message: "Database Error: Failed to Update Post." };
+    return { message: 'Database Error: Failed to Update Post.' };
   }
 
-  revalidatePath("/dashboard");
-  redirect("/dashboard");
+  revalidatePath('/dashboard');
+  redirect('/dashboard');
 }
 
 export async function updateProfile(values: z.infer<typeof UpdateUser>) {
@@ -341,7 +361,7 @@ export async function updateProfile(values: z.infer<typeof UpdateUser>) {
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: "Missing Fields. Failed to Update Profile.",
+      message: 'Missing Fields. Failed to Update Profile.',
     };
   }
 
@@ -361,10 +381,10 @@ export async function updateProfile(values: z.infer<typeof UpdateUser>) {
         website,
       },
     });
-    revalidatePath("/dashboard");
-    return { message: "Updated Profile." };
+    revalidatePath('/dashboard');
+    return { message: 'Updated Profile.' };
   } catch (error) {
-    return { message: "Database Error: Failed to Update Profile." };
+    return { message: 'Database Error: Failed to Update Profile.' };
   }
 }
 
@@ -372,7 +392,7 @@ export async function followUser(formData: FormData) {
   const userId = await getUserId();
 
   const { id } = FollowUser.parse({
-    id: formData.get("id"),
+    id: formData.get('id'),
   });
 
   const user = await prisma.user.findUnique({
@@ -382,7 +402,7 @@ export async function followUser(formData: FormData) {
   });
 
   if (!user) {
-    throw new Error("User not found");
+    throw new Error('User not found');
   }
 
   const follows = await prisma.follows.findUnique({
@@ -406,11 +426,11 @@ export async function followUser(formData: FormData) {
           },
         },
       });
-      revalidatePath("/dashboard");
-      return { message: "Unfollowed User." };
+      revalidatePath('/dashboard');
+      return { message: 'Unfollowed User.' };
     } catch (error) {
       return {
-        message: "Database Error: Failed to Unfollow User.",
+        message: 'Database Error: Failed to Unfollow User.',
       };
     }
   }
@@ -422,11 +442,32 @@ export async function followUser(formData: FormData) {
         followingId: id,
       },
     });
-    revalidatePath("/dashboard");
-    return { message: "Followed User." };
+    revalidatePath('/dashboard');
+    return { message: 'Followed User.' };
   } catch (error) {
     return {
-      message: "Database Error: Failed to Follow User.",
+      message: 'Database Error: Failed to Follow User.',
     };
   }
+}
+
+export async function saveReply({
+  body,
+  postId,
+  parentId,
+  userId,
+}: {
+  body: string;
+  postId: string;
+  parentId: string | null; // Ensure this is allowed
+  userId: string;
+}) {
+  return await prisma.comment.create({
+    data: {
+      body,
+      postId,
+      ...(parentId !== null ? { parentId } : {}),
+      userId,
+    },
+  });
 }

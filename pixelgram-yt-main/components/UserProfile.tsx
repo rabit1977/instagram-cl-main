@@ -1,3 +1,4 @@
+import { NEXT_PROJECT_ROOT_DIST } from "next/dist/build/webpack-config";
 import Image from "next/image";
 
 interface UserProfileProps {
@@ -34,3 +35,4 @@ const UserProfile = ({ profile }: UserProfileProps) => (
 );
 
 export default UserProfile;
+
